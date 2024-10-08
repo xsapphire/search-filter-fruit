@@ -6,16 +6,17 @@ import { useClickOutside } from "../hooks/useClickOutside";
 import { Fruit } from "../page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { themedColors } from "../colors";
 
 const SearchDropdown = styled.ul`
-  border: 1px solid #bababa;
+  border: 1px solid ${themedColors.input.border};
   z-index: 1;
 `;
 
 const SearchIcon = styled(FontAwesomeIcon)`
   right: 0.5em;
   top: calc((100% - 1em) / 2);
-  color: #bababa;
+  color: ${themedColors.icon.input};
 `;
 
 type SearchBarProps<T> = {
@@ -77,12 +78,18 @@ export const SearchBar = <T extends Fruit>({
       {suggestedItems && suggestedItems.length > 0 && (
         <SearchDropdown className="absolute w-full py-1 bg-white rounded mt-1">
           {suggestedItems.map((item) => {
+            const detailItem = showDetail && item.value === showDetail.value;
+
             return (
-              <li key={item.value} onClick={() => setShowDetail(item)}>
+              <li
+                key={item.value}
+                onClick={() => setShowDetail(item)}
+                className={detailItem ? "active" : undefined}
+              >
                 <p>{item.label}</p>
 
-                {showDetail && item.value === showDetail.value && (
-                  <p className="italic text-sm text-slate-500">
+                {detailItem && (
+                  <p className="italic text-sm text-slate-100">
                     {suggestRange?.find((i) => i.name === item.label)?.brief}
                   </p>
                 )}

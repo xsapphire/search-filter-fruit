@@ -4,31 +4,32 @@ import { useClickOutside } from "../hooks/useClickOutside";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faClose } from "@fortawesome/free-solid-svg-icons";
+import { themedColors } from "../colors";
 
 const SelectInputWrapper = styled.div`
-  border: 1px solid #bababa;
+  border: 1px solid ${themedColors.input.border};
   &:focus {
-    border: 1px solid mediumblue;
+    border: 1px solid ${themedColors.input.active};
   }
 `;
 
 const SelectInputDisplay = styled.div<{ $hasSelectedValue?: boolean }>`
   color: ${({ $hasSelectedValue }) =>
-    $hasSelectedValue ? "inherit" : "#bababa"};
+    $hasSelectedValue ? "inherit" : themedColors.input.placeholder};
 `;
 
 const SelectInputIndicator = styled.div`
-  border-left: 1px solid #bababa;
+  border-left: 1px solid ${themedColors.input.border};
 `;
 
 const ClearIcon = styled(FontAwesomeIcon)`
   &:hover {
-    color: mediumblue;
+    color: ${themedColors.icon.hover};
   }
 `;
 
 const Dropdown = styled.div`
-  border: 1px solid #bababa;
+  border: 1px solid ${themedColors.icon.input};
 `;
 
 type SelectProps = {
@@ -41,7 +42,7 @@ type SelectProps = {
   onClear?: () => void;
   useClearIcon?: boolean;
 
-  // Search feature
+  // Optional search feature
   enableSearch?: boolean;
 };
 
@@ -119,7 +120,10 @@ export const Select = ({
           className="p-2"
           onClick={() => setDropdownOpen(true)}
         >
-          <FontAwesomeIcon color="#bababa" icon={faChevronDown} />
+          <FontAwesomeIcon
+            color={themedColors.icon.input}
+            icon={faChevronDown}
+          />
         </SelectInputIndicator>
       </SelectInputWrapper>
 
@@ -132,6 +136,7 @@ export const Select = ({
                 onChange={(event) => {
                   onSearch(event.target.value);
                 }}
+                placeholder="Search options"
               />
             </div>
           )}
