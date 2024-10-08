@@ -7,41 +7,62 @@ import { faChevronDown, faClose } from "@fortawesome/free-solid-svg-icons";
 
 const SelectInputWrapper = styled.div`
   border: 1px solid #bababa;
-  border-radius: 0.25em;
+  &:focus {
+    border: 1px solid mediumblue;
+  }
 `;
 
-const SelectInputDisplay = styled.div`
-  padding: 0.5em;
+const SelectInputDisplay = styled.div<{ $hasSelectedValue?: boolean }>`
+  color: ${({ $hasSelectedValue }) =>
+    $hasSelectedValue ? "inherit" : "#bababa"};
 `;
 
-const SelectInputIcon = styled.div`
-  padding: 0.5em;
+const SelectInputIndicator = styled.div`
   border-left: 1px solid #bababa;
 `;
 
 const ClearIcon = styled(FontAwesomeIcon)`
-  z-index: 1;
-
   &:hover {
-    color: blue;
+    color: mediumblue;
   }
 `;
 
 const Dropdown = styled.div`
   border: 1px solid #bababa;
-  background-color: #ffffff;
 `;
 
 type SelectProps = {
   options: Option[] | undefined;
+  placeholder?: string;
   defaultValue?: Option;
-  onChange?: (o: Option) => void;
+  onSelect?: (o: Option) => void;
+
+  // Optional clear feature
+  onClear?: () => void;
+  useClearIcon?: boolean;
+
+  // Search feature
+  enableSearch?: boolean;
 };
 
+/**
+ * @param options {Option} an array of Option
+ * @param placeholder {string} optional, the placeholder string
+ * @param defaultValue {Option} optional, the default value of the select
+ * @param onSelect {(Option) => void} optional, on select item
+ * @param useClearIcon {boolean} optional, if true, show an "faClose" icon to clear selection
+ * @param onClear {() => void} optional, on clearing selection
+ * @param enableSearch {boolean} optional, if enabled, show a search box in dropdown
+ * @returns A custom select UI component
+ */
 export const Select = ({
   options,
+  placeholder,
   defaultValue,
-  onChange,
+  onSelect,
+  onClear,
+  useClearIcon,
+  enableSearch,
 }: SelectProps): ReactElement => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Option | undefined>(
@@ -49,14 +70,12 @@ export const Select = ({
   );
   const [_options, setOptions] = useState<Option[] | undefined>(options);
 
-  const onClickOutside = () => {
-    setDropdownOpen(false);
-  };
-
   const ref = useRef<HTMLDivElement>(null);
-  useClickOutside(ref, onClickOutside);
+  useClickOutside(ref, () => {
+    setDropdownOpen(false);
+  });
 
-  const handleInputChange = (input: string) => {
+  const onSearch = (input: string) => {
     const filteredOptions = options?.reduce<Option[]>((acc, option) => {
       if (option.label.toUpperCase().includes(input.toUpperCase())) {
         acc.push(option);
@@ -68,36 +87,54 @@ export const Select = ({
     setOptions(filteredOptions);
   };
 
-  const clearSelection = () => {
+  const _onClear = () => {
     setSelectedItem(undefined);
+    onClear?.();
   };
 
   return (
     <div className="relative">
-      <SelectInputWrapper className="flex gap-2 items-center">
+      <SelectInputWrapper
+        className="flex gap-2 items-center rounded"
+        tabIndex={0}
+      >
         <SelectInputDisplay
-          className="grow"
+          className="grow p-2"
           onClick={() => setDropdownOpen(true)}
+          $hasSelectedValue={!!selectedItem}
         >
-          {selectedItem?.label}
+          {selectedItem ? selectedItem.label : placeholder}
         </SelectInputDisplay>
 
-        <ClearIcon onClick={clearSelection} className="p-2" icon={faClose} />
+        {selectedItem && useClearIcon && (
+          <ClearIcon
+            tabIndex={0}
+            onClick={_onClear}
+            className="p-2 cursor-pointer"
+            icon={faClose}
+          />
+        )}
 
-        <SelectInputIcon onClick={() => setDropdownOpen(true)}>
+        <SelectInputIndicator
+          className="p-2"
+          onClick={() => setDropdownOpen(true)}
+        >
           <FontAwesomeIcon color="#bababa" icon={faChevronDown} />
-        </SelectInputIcon>
+        </SelectInputIndicator>
       </SelectInputWrapper>
+
       {dropdownOpen && (
-        <Dropdown ref={ref} className="w-full absolute">
-          <div className="w-full p-2">
-            <input
-              className="w-full"
-              onChange={(event) => {
-                handleInputChange(event.target.value);
-              }}
-            />
-          </div>
+        <Dropdown ref={ref} className="w-full absolute bg-white py-1 mt-1">
+          {enableSearch && (
+            <div className="w-full p-2">
+              <input
+                className="w-full"
+                onChange={(event) => {
+                  onSearch(event.target.value);
+                }}
+              />
+            </div>
+          )}
 
           <ul>
             {_options?.map((o) => {
@@ -110,7 +147,12 @@ export const Select = ({
                   onClick={() => {
                     setSelectedItem(o);
                     setDropdownOpen(false);
-                    onChange?.(o);
+
+                    onSelect?.(o);
+
+                    if (enableSearch) {
+                      setOptions(options);
+                    }
                   }}
                 >
                   {o.label}

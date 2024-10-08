@@ -36,6 +36,19 @@ input {
   padding: .5em;
 }
 
+input:focus {
+  border: 1px solid mediumblue;
+}
+
+input:focus-visible {
+  outline: none;
+  border: 1px solid mediumblue;
+}
+
+input::placeholder {
+  color: #bababa;
+}
+
 li {
   padding: .5em;
 }

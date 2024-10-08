@@ -11,11 +11,7 @@ import styled from "styled-components";
 
 const Card = styled.div`
   width: 500px;
-  background: white;
   border: 1px solid #ddd;
-  box-shadow: 0px 0px 5px #efefef;
-  border-radius: 10px;
-  padding: 1em;
 `;
 
 export type Fruit = {
@@ -29,18 +25,21 @@ const fruitData: Fruit[] = JSON.parse(JSON.stringify(fruitsData)).fruits;
 export default function Home() {
   const fruitNames = fruitData.map((d) => d.name);
   const fruitOptions = createOptions(fruitNames);
-  const [selectedOption, setSelectedOption] = useState<Option>(fruitOptions[0]);
+  const [selectedOption, setSelectedOption] = useState<Option | undefined>(
+    undefined
+  );
 
   return (
     <main className="h-screen flex justify-center items-center">
       <FruitContext.Provider
         value={{
           selectedFruit: selectedOption,
-          fruitOptions: fruitOptions,
+          fruitOptions,
           updateSelectedFruit: setSelectedOption,
+          fruitData,
         }}
       >
-        <Card className="flex gap-4 flex-col">
+        <Card className="flex gap-4 flex-col bg-white p-4 rounded-2xl shadow">
           <FruitSearch />
           <FruitSelect />
 

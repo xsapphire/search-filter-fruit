@@ -1,5 +1,5 @@
 import { ReactElement, useRef, useState } from "react";
-import { Option } from "../utils/option";
+import { createOption, Option } from "../utils/option";
 import styled from "styled-components";
 import debounce from "lodash/debounce";
 import { useClickOutside } from "../hooks/useClickOutside";
@@ -8,17 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const SearchDropdown = styled.ul`
-  margin-top: 0.25em;
   border: 1px solid #bababa;
-  border-radius: 0.25em;
-  z-index: 2;
-  background: #ffffff;
-`;
-
-const DetailText = styled.p`
-  font-style: italic;
-  font-size: 0.9em;
-  color: #888;
+  z-index: 1;
 `;
 
 const SearchIcon = styled(FontAwesomeIcon)`
@@ -28,53 +19,49 @@ const SearchIcon = styled(FontAwesomeIcon)`
 `;
 
 type SearchBarProps<T> = {
-  suggestedOptions?: Option[];
-  itemDetails?: T[];
+  suggestRange?: T[];
   placeholder?: string;
 };
 
+/**
+ * @param suggestRange {T[]} optional, an array of items to suggest from
+ * @param placeholder {string} optional, the placeholder text
+ * @returns
+ */
 export const SearchBar = <T extends Fruit>({
-  suggestedOptions,
-  itemDetails,
+  suggestRange,
   placeholder,
 }: SearchBarProps<T>): ReactElement => {
-  console.log("item details: ", itemDetails);
-
   const [suggestedItems, setSuggestedItems] = useState<Option[] | undefined>(
     undefined
   );
   const [showDetail, setShowDetail] = useState<Option | undefined>(undefined);
 
-  const handleInputChange = (input: string) => {
+  const onSearch = (input: string) => {
     if (!input) {
       setSuggestedItems(undefined);
       setShowDetail(undefined);
       return;
     }
 
-    const filteredOptions = suggestedOptions?.reduce<Option[]>(
-      (acc, option) => {
-        if (option.label.toUpperCase().includes(input.toUpperCase())) {
-          acc.push(option);
-        }
+    const filteredOptions = suggestRange?.reduce<Option[]>((acc, item) => {
+      if (item.name.toUpperCase().includes(input.toUpperCase())) {
+        acc.push(createOption(item.name));
+      }
 
-        return acc;
-      },
-      []
-    );
+      return acc;
+    }, []);
 
     setSuggestedItems(filteredOptions);
   };
 
-  const debouncedOnChange = debounce(handleInputChange, 500);
-
-  const onClickOutside = () => {
-    setSuggestedItems(undefined);
-    setShowDetail(undefined);
-  };
+  const debouncedOnChange = debounce(onSearch, 500);
 
   const ref = useRef<HTMLDivElement>(null);
-  useClickOutside(ref, onClickOutside);
+  useClickOutside(ref, () => {
+    setSuggestedItems(undefined);
+    setShowDetail(undefined);
+  });
 
   return (
     <div ref={ref} className="relative">
@@ -86,16 +73,18 @@ export const SearchBar = <T extends Fruit>({
         placeholder={placeholder}
       />
       <SearchIcon className="absolute" icon={faSearch} />
-      {suggestedItems && (
-        <SearchDropdown className="absolute w-full">
+
+      {suggestedItems && suggestedItems.length > 0 && (
+        <SearchDropdown className="absolute w-full py-1 bg-white rounded mt-1">
           {suggestedItems.map((item) => {
             return (
               <li key={item.value} onClick={() => setShowDetail(item)}>
                 <p>{item.label}</p>
+
                 {showDetail && item.value === showDetail.value && (
-                  <DetailText>
-                    {itemDetails?.find((d) => d.name === item.label)?.brief}
-                  </DetailText>
+                  <p className="italic text-sm text-slate-500">
+                    {suggestRange?.find((i) => i.name === item.label)?.brief}
+                  </p>
                 )}
               </li>
             );
