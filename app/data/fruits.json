@@ -1,0 +1,13 @@
+{
+  "fruits": [
+    {
+      "name": "Apple",
+      "brief": "Malus, Rose family, red and round",
+      "description": "Apple, Fruit of the genus Malus, in the rose family, the most widely cultivated tree fruit. Malus species are native to the temperate zones of both hemispheres. They require a considerable period of dormancy, well-drained soil, careful pruning in early years of growth, and a rigorous pest-management program for mature trees. The apple is one of the pome (fleshy) fruits. Apples at harvest vary widely in size, shape, colour, and acidity, but most are fairly round and some shade of red or yellow. The thousands of varieties fall into three broad classes: cider, cooking, and dessert varieties. Varieties that ripen in late summer generally do not store well, but those that ripen in late autumn may be stored for as long as a year. The largest producers of apples are the U.S., China, France, Italy, and Turkey. Eaten fresh or cooked in various ways, apples provide vitamins A and C, carbohydrates, and fibre."
+    },{
+      "name": "Banana",
+      "brief": "Musa, Musaceae, yellow and long",
+      "description": "Banana, fruit of the genus Musa, of the family Musaceae, one of the most important fruit crops of the world. The banana is grown in the tropics, and, though it is most widely consumed in those regions, it is valued worldwide for its flavour, nutritional value, and availability throughout the year. Cavendish, or dessert, bananas are most commonly eaten fresh, though they may be fried or mashed and chilled in pies or puddings. They may also be used to flavour muffins, cakes, or breads. Cooking varieties, or plantains, are starchy rather than sweet and are grown extensively as a staple food source in tropical regions; they are cooked when ripe or immature. A ripe fruit contains as much as 22 percent of carbohydrate and is high in dietary fibre, potassium, manganese, and vitamins B6 and C."
+    }
+  ]
+}

@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: #f7f5ee;
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
@@ -24,4 +24,27 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+h2 {
+  font-weight: bold;
+}
+
+input {
+  border: 1px solid #bababa;
+  border-radius: .25em;
+  padding: .5em;
+}
+
+li {
+  padding: .5em;
+}
+
+li:hover {
+  background-color: #efefef;
+}
+
+li.active{
+  background-color:mediumblue;
+  color: white;
 }
