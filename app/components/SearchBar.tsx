@@ -7,11 +7,7 @@ import { Fruit } from "../page";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { themedColors } from "../colors";
-
-const SearchDropdown = styled.ul`
-  border: 1px solid ${themedColors.input.border};
-  z-index: 1;
-`;
+import { DropdownMenu } from "./DropdownMenu";
 
 const SearchIcon = styled(FontAwesomeIcon)`
   right: 0.5em;
@@ -27,7 +23,9 @@ type SearchBarProps<T> = {
 /**
  * @param suggestRange {T[]} optional, an array of items to suggest from
  * @param placeholder {string} optional, the placeholder text
- * @returns
+ * @returns A search bar that takes user input and searches against `suggestRange` for
+ * suggestion, and on clicking on the suggested item, the dropdown shows the detail of
+ * this clicked item
  */
 export const SearchBar = <T extends Fruit>({
   suggestRange,
@@ -38,10 +36,14 @@ export const SearchBar = <T extends Fruit>({
   );
   const [showDetail, setShowDetail] = useState<Option | undefined>(undefined);
 
+  const clearSuggestion = () => {
+    setSuggestedItems(undefined);
+    setShowDetail(undefined);
+  };
+
   const onSearch = (input: string) => {
     if (!input) {
-      setSuggestedItems(undefined);
-      setShowDetail(undefined);
+      clearSuggestion();
       return;
     }
 
@@ -59,10 +61,7 @@ export const SearchBar = <T extends Fruit>({
   const debouncedOnChange = debounce(onSearch, 500);
 
   const ref = useRef<HTMLDivElement>(null);
-  useClickOutside(ref, () => {
-    setSuggestedItems(undefined);
-    setShowDetail(undefined);
-  });
+  useClickOutside(ref, clearSuggestion);
 
   return (
     <div ref={ref} className="relative">
@@ -76,27 +75,29 @@ export const SearchBar = <T extends Fruit>({
       <SearchIcon className="absolute" icon={faSearch} />
 
       {suggestedItems && suggestedItems.length > 0 && (
-        <SearchDropdown className="absolute w-full py-1 bg-white rounded mt-1">
-          {suggestedItems.map((item) => {
-            const detailItem = showDetail && item.value === showDetail.value;
+        <DropdownMenu>
+          <ul>
+            {suggestedItems.map((item) => {
+              const detailItem = showDetail && item.value === showDetail.value;
 
-            return (
-              <li
-                key={item.value}
-                onClick={() => setShowDetail(item)}
-                className={detailItem ? "active" : undefined}
-              >
-                <p>{item.label}</p>
+              return (
+                <li
+                  key={item.value}
+                  onClick={() => setShowDetail(item)}
+                  className={detailItem ? "active" : undefined}
+                >
+                  <p>{item.label}</p>
 
-                {detailItem && (
-                  <p className="italic text-sm text-slate-100">
-                    {suggestRange?.find((i) => i.name === item.label)?.brief}
-                  </p>
-                )}
-              </li>
-            );
-          })}
-        </SearchDropdown>
+                  {detailItem && (
+                    <p className="italic text-sm text-slate-100">
+                      {suggestRange?.find((i) => i.name === item.label)?.brief}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </DropdownMenu>
       )}
     </div>
   );

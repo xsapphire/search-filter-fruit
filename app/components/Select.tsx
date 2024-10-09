@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faClose } from "@fortawesome/free-solid-svg-icons";
 import { themedColors } from "../colors";
+import { DropdownMenu } from "./DropdownMenu";
 
 const SelectInputWrapper = styled.div`
   border: 1px solid ${themedColors.input.border};
@@ -26,10 +27,6 @@ const ClearIcon = styled(FontAwesomeIcon)`
   &:hover {
     color: ${themedColors.icon.hover};
   }
-`;
-
-const Dropdown = styled.div`
-  border: 1px solid ${themedColors.icon.input};
 `;
 
 type SelectProps = {
@@ -128,7 +125,7 @@ export const Select = ({
       </SelectInputWrapper>
 
       {dropdownOpen && (
-        <Dropdown ref={ref} className="w-full absolute bg-white py-1 mt-1">
+        <DropdownMenu divRef={ref}>
           {enableSearch && (
             <div className="w-full p-2">
               <input
@@ -165,7 +162,7 @@ export const Select = ({
               );
             })}
           </ul>
-        </Dropdown>
+        </DropdownMenu>
       )}
     </div>
   );
